@@ -4,6 +4,7 @@ Storage Optimization Agent - Analyzes storage resources and generates recommenda
 import json
 from typing import Dict
 from backend.utils.llm_client import LLMClient
+from backend.utils.logger import setup_logger
 
 
 class StorageOptimizationAgent:
@@ -11,6 +12,7 @@ class StorageOptimizationAgent:
     
     def __init__(self, llm_client: LLMClient):
         self.llm_client = llm_client
+        self.logger = setup_logger("StorageOptimizationAgent")
     
     def analyze(self, scan_data: Dict) -> Dict:
         """
@@ -22,6 +24,9 @@ class StorageOptimizationAgent:
         Returns:
             Dict: Structured recommendations in JSON format
         """
+        self.logger.info("Loading scan data for analysis")
+        self.logger.debug(f"Account: {scan_data.get('accountId')}, Region: {scan_data.get('region')}")
+        
         system_prompt = """You are a cloud storage optimization expert. Analyze the provided AWS scan data and generate cost optimization recommendations.
 
 CRITICAL: Respond ONLY with valid JSON. No explanations, no markdown, no code blocks. Just raw JSON.
@@ -54,6 +59,7 @@ Focus on:
 
 Return ONLY valid JSON with no additional text."""
         
+        self.logger.info("Invoking LLM for storage optimization analysis")
         response = self.llm_client.invoke(
             system_prompt=system_prompt,
             user_prompt=user_prompt,
@@ -61,16 +67,25 @@ Return ONLY valid JSON with no additional text."""
             max_tokens=2000
         )
         
+        self.logger.info("Parsing LLM response")
         # Parse and validate JSON response
         try:
             recommendations = json.loads(response.strip())
+            self.logger.info(f"Successfully parsed recommendations: {len(recommendations.get('recommendations', []))} items")
+            self.logger.info(f"Returning recommendations with potential savings: ${recommendations.get('totalPotentialSavings', 0):.2f}")
             return recommendations
         except json.JSONDecodeError:
+            self.logger.warning("Initial JSON parse failed, attempting to extract from markdown")
             # Attempt to extract JSON if wrapped in markdown
             if "```json" in response:
                 json_str = response.split("```json")[1].split("```")[0].strip()
-                return json.loads(json_str)
+                recommendations = json.loads(json_str)
+                self.logger.info("Successfully extracted JSON from markdown wrapper")
+                return recommendations
             elif "```" in response:
                 json_str = response.split("```")[1].split("```")[0].strip()
-                return json.loads(json_str)
+                recommendations = json.loads(json_str)
+                self.logger.info("Successfully extracted JSON from code block")
+                return recommendations
+            self.logger.error(f"Failed to parse LLM response as JSON: {response[:200]}...")
             raise ValueError(f"LLM did not return valid JSON: {response}")
