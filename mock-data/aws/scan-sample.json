@@ -1,0 +1,215 @@
+{
+  "accountId": "123456789012",
+  "region": "us-east-1",
+  "scanTimestamp": "2024-01-15T10:30:00Z",
+  "ec2Instances": [
+    {
+      "instanceId": "i-0abc123def456",
+      "instanceType": "t3.medium",
+      "state": "running",
+      "launchTime": "2024-01-01T08:00:00Z",
+      "availabilityZone": "us-east-1a",
+      "platform": "linux",
+      "vpcId": "vpc-0123456789",
+      "tags": {
+        "Name": "web-server-01",
+        "Environment": "production"
+      },
+      "pricing": {
+        "hourlyRate": 0.0416,
+        "monthlyEstimate": 30.37
+      }
+    }
+  ],
+  "ebsVolumes": [
+    {
+      "volumeId": "vol-0abc123def",
+      "volumeType": "gp3",
+      "size": 100,
+      "state": "in-use",
+      "iops": 3000,
+      "throughput": 125,
+      "encrypted": true,
+      "attachments": [
+        {
+          "instanceId": "i-0abc123def456",
+          "device": "/dev/sda1",
+          "state": "attached"
+        }
+      ],
+      "createTime": "2024-01-01T08:00:00Z",
+      "tags": {
+        "Name": "web-server-root"
+      },
+      "pricing": {
+        "monthlyStorageCost": 8.00,
+        "monthlyIopsCost": 0.00
+      }
+    }
+  ],
+  "rdsInstances": [
+    {
+      "dbInstanceIdentifier": "prod-mysql-db",
+      "dbInstanceClass": "db.t3.medium",
+      "engine": "mysql",
+      "engineVersion": "8.0.35",
+      "dbInstanceStatus": "available",
+      "allocatedStorage": 100,
+      "storageType": "gp3",
+      "multiAZ": true,
+      "availabilityZone": "us-east-1a",
+      "backupRetentionPeriod": 7,
+      "instanceCreateTime": "2024-01-01T09:00:00Z",
+      "vpcId": "vpc-0123456789",
+      "publiclyAccessible": false,
+      "tags": {
+        "Name": "production-database",
+        "Environment": "production"
+      },
+      "pricing": {
+        "hourlyRate": 0.136,
+        "monthlyEstimate": 99.28,
+        "storageCost": 23.00
+      }
+    }
+  ],
+  "s3Buckets": [
+    {
+      "bucketName": "my-app-data-bucket",
+      "creationDate": "2023-12-01T00:00:00Z",
+      "region": "us-east-1",
+      "storageMetrics": {
+        "sizeBytes": 524288000000,
+        "objectCount": 15000,
+        "storageClass": {
+          "standard": 314572800000,
+          "standardIA": 104857600000,
+          "intelligentTiering": 52428800000,
+          "glacier": 52428800000,
+          "glacierDeepArchive": 0
+        }
+      },
+      "versioning": {
+        "status": "Enabled"
+      },
+      "encryption": {
+        "enabled": true,
+        "type": "AES256"
+      },
+      "publicAccess": {
+        "blockPublicAcls": true,
+        "blockPublicPolicy": true,
+        "ignorePublicAcls": true,
+        "restrictPublicBuckets": true
+      },
+      "tags": {
+        "Application": "DataLake",
+        "CostCenter": "Engineering"
+      },
+      "pricing": {
+        "monthlyStorageCost": 11.52,
+        "monthlyRequestCost": 2.50,
+        "dataTransferCost": 15.00
+      }
+    }
+  ],
+  "natGateways": [
+    {
+      "natGatewayId": "nat-0abc123def456",
+      "state": "available",
+      "vpcId": "vpc-0123456789",
+      "subnetId": "subnet-0abc123",
+      "createTime": "2024-01-01T07:00:00Z",
+      "natGatewayAddresses": [
+        {
+          "allocationId": "eipalloc-0abc123",
+          "publicIp": "54.123.45.67",
+          "privateIp": "10.0.1.5"
+        }
+      ],
+      "connectivityType": "public",
+      "tags": {
+        "Name": "prod-nat-gateway",
+        "Environment": "production"
+      },
+      "pricing": {
+        "hourlyRate": 0.045,
+        "dataProcessingCost": 12.50,
+        "monthlyEstimate": 45.10
+      }
+    }
+  ],
+  "cloudWatchMetrics": {
+    "ec2Metrics": [
+      {
+        "instanceId": "i-0abc123def456",
+        "metricName": "CPUUtilization",
+        "statistics": {
+          "average": 45.5,
+          "maximum": 85.2,
+          "minimum": 12.3,
+          "sum": 32760,
+          "sampleCount": 720
+        },
+        "unit": "Percent",
+        "period": 300,
+        "startTime": "2024-01-14T10:30:00Z",
+        "endTime": "2024-01-15T10:30:00Z"
+      }
+    ],
+    "rdsMetrics": [
+      {
+        "dbInstanceIdentifier": "prod-mysql-db",
+        "metricName": "CPUUtilization",
+        "statistics": {
+          "average": 32.5,
+          "maximum": 68.9,
+          "minimum": 8.2
+        },
+        "unit": "Percent",
+        "period": 300,
+        "startTime": "2024-01-14T10:30:00Z",
+        "endTime": "2024-01-15T10:30:00Z"
+      }
+    ],
+    "natGatewayMetrics": [
+      {
+        "natGatewayId": "nat-0abc123def456",
+        "metricName": "BytesOutToDestination",
+        "statistics": {
+          "sum": 125829120000,
+          "average": 174763333
+        },
+        "unit": "Bytes",
+        "period": 300,
+        "startTime": "2024-01-14T10:30:00Z",
+        "endTime": "2024-01-15T10:30:00Z"
+      }
+    ],
+    "s3Metrics": [
+      {
+        "bucketName": "my-app-data-bucket",
+        "metricName": "BucketSizeBytes",
+        "statistics": {
+          "average": 524288000000
+        },
+        "storageType": "StandardStorage",
+        "unit": "Bytes",
+        "period": 86400,
+        "startTime": "2024-01-14T00:00:00Z",
+        "endTime": "2024-01-15T00:00:00Z"
+      }
+    ]
+  },
+  "costSummary": {
+    "totalMonthlyCost": 229.27,
+    "costByService": {
+      "ec2": 30.37,
+      "ebs": 8.00,
+      "rds": 122.28,
+      "s3": 29.02,
+      "natGateway": 45.10
+    },
+    "currency": "USD"
+  }
+}

@@ -1,0 +1,611 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AWS Scan Input Data Schema",
+  "description": "Schema for AWS resource scan data including EC2, EBS, RDS, S3, NAT Gateways, and CloudWatch metrics",
+  "type": "object",
+  "required": ["accountId", "region", "scanTimestamp"],
+  "properties": {
+    "accountId": {
+      "type": "string",
+      "description": "AWS Account ID"
+    },
+    "region": {
+      "type": "string",
+      "description": "AWS Region"
+    },
+    "scanTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the scan"
+    },
+    "ec2Instances": {
+      "type": "array",
+      "description": "EC2 instance data",
+      "items": {
+        "type": "object",
+        "required": ["instanceId", "instanceType", "state"],
+        "properties": {
+          "instanceId": {
+            "type": "string"
+          },
+          "instanceType": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["pending", "running", "stopping", "stopped", "terminated"]
+          },
+          "launchTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "availabilityZone": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          },
+          "vpcId": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "pricing": {
+            "type": "object",
+            "properties": {
+              "hourlyRate": {
+                "type": "number"
+              },
+              "monthlyEstimate": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ebsVolumes": {
+      "type": "array",
+      "description": "EBS volume data",
+      "items": {
+        "type": "object",
+        "required": ["volumeId", "volumeType", "size", "state"],
+        "properties": {
+          "volumeId": {
+            "type": "string"
+          },
+          "volumeType": {
+            "type": "string",
+            "enum": ["gp2", "gp3", "io1", "io2", "st1", "sc1", "standard"]
+          },
+          "size": {
+            "type": "integer",
+            "description": "Size in GB"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["creating", "available", "in-use", "deleting", "deleted", "error"]
+          },
+          "iops": {
+            "type": "integer"
+          },
+          "throughput": {
+            "type": "integer"
+          },
+          "encrypted": {
+            "type": "boolean"
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "instanceId": {
+                  "type": "string"
+                },
+                "device": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "tags": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "pricing": {
+            "type": "object",
+            "properties": {
+              "monthlyStorageCost": {
+                "type": "number"
+              },
+              "monthlyIopsCost": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "rdsInstances": {
+      "type": "array",
+      "description": "RDS database instance data",
+      "items": {
+        "type": "object",
+        "required": ["dbInstanceIdentifier", "dbInstanceClass", "engine", "dbInstanceStatus"],
+        "properties": {
+          "dbInstanceIdentifier": {
+            "type": "string"
+          },
+          "dbInstanceClass": {
+            "type": "string"
+          },
+          "engine": {
+            "type": "string"
+          },
+          "engineVersion": {
+            "type": "string"
+          },
+          "dbInstanceStatus": {
+            "type": "string"
+          },
+          "allocatedStorage": {
+            "type": "integer",
+            "description": "Storage in GB"
+          },
+          "storageType": {
+            "type": "string",
+            "enum": ["gp2", "gp3", "io1", "standard"]
+          },
+          "multiAZ": {
+            "type": "boolean"
+          },
+          "availabilityZone": {
+            "type": "string"
+          },
+          "backupRetentionPeriod": {
+            "type": "integer"
+          },
+          "instanceCreateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "vpcId": {
+            "type": "string"
+          },
+          "publiclyAccessible": {
+            "type": "boolean"
+          },
+          "tags": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "pricing": {
+            "type": "object",
+            "properties": {
+              "hourlyRate": {
+                "type": "number"
+              },
+              "monthlyEstimate": {
+                "type": "number"
+              },
+              "storageCost": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "s3Buckets": {
+      "type": "array",
+      "description": "S3 bucket data",
+      "items": {
+        "type": "object",
+        "required": ["bucketName", "creationDate"],
+        "properties": {
+          "bucketName": {
+            "type": "string"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "region": {
+            "type": "string"
+          },
+          "storageMetrics": {
+            "type": "object",
+            "properties": {
+              "sizeBytes": {
+                "type": "integer"
+              },
+              "objectCount": {
+                "type": "integer"
+              },
+              "storageClass": {
+                "type": "object",
+                "properties": {
+                  "standard": {
+                    "type": "integer"
+                  },
+                  "standardIA": {
+                    "type": "integer"
+                  },
+                  "intelligentTiering": {
+                    "type": "integer"
+                  },
+                  "glacier": {
+                    "type": "integer"
+                  },
+                  "glacierDeepArchive": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "versioning": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": ["Enabled", "Suspended", "Disabled"]
+              }
+            }
+          },
+          "encryption": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "type": {
+                "type": "string"
+              }
+            }
+          },
+          "publicAccess": {
+            "type": "object",
+            "properties": {
+              "blockPublicAcls": {
+                "type": "boolean"
+              },
+              "blockPublicPolicy": {
+                "type": "boolean"
+              },
+              "ignorePublicAcls": {
+                "type": "boolean"
+              },
+              "restrictPublicBuckets": {
+                "type": "boolean"
+              }
+            }
+          },
+          "tags": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "pricing": {
+            "type": "object",
+            "properties": {
+              "monthlyStorageCost": {
+                "type": "number"
+              },
+              "monthlyRequestCost": {
+                "type": "number"
+              },
+              "dataTransferCost": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "natGateways": {
+      "type": "array",
+      "description": "NAT Gateway data",
+      "items": {
+        "type": "object",
+        "required": ["natGatewayId", "state", "vpcId"],
+        "properties": {
+          "natGatewayId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["pending", "failed", "available", "deleting", "deleted"]
+          },
+          "vpcId": {
+            "type": "string"
+          },
+          "subnetId": {
+            "type": "string"
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "natGatewayAddresses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "allocationId": {
+                  "type": "string"
+                },
+                "publicIp": {
+                  "type": "string"
+                },
+                "privateIp": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "connectivityType": {
+            "type": "string",
+            "enum": ["public", "private"]
+          },
+          "tags": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "pricing": {
+            "type": "object",
+            "properties": {
+              "hourlyRate": {
+                "type": "number"
+              },
+              "dataProcessingCost": {
+                "type": "number"
+              },
+              "monthlyEstimate": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "cloudWatchMetrics": {
+      "type": "object",
+      "description": "CloudWatch metric summaries",
+      "properties": {
+        "ec2Metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["instanceId", "metricName", "statistics"],
+            "properties": {
+              "instanceId": {
+                "type": "string"
+              },
+              "metricName": {
+                "type": "string",
+                "enum": ["CPUUtilization", "NetworkIn", "NetworkOut", "DiskReadBytes", "DiskWriteBytes"]
+              },
+              "statistics": {
+                "type": "object",
+                "properties": {
+                  "average": {
+                    "type": "number"
+                  },
+                  "maximum": {
+                    "type": "number"
+                  },
+                  "minimum": {
+                    "type": "number"
+                  },
+                  "sum": {
+                    "type": "number"
+                  },
+                  "sampleCount": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "unit": {
+                "type": "string"
+              },
+              "period": {
+                "type": "integer",
+                "description": "Period in seconds"
+              },
+              "startTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endTime": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "rdsMetrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["dbInstanceIdentifier", "metricName", "statistics"],
+            "properties": {
+              "dbInstanceIdentifier": {
+                "type": "string"
+              },
+              "metricName": {
+                "type": "string",
+                "enum": ["CPUUtilization", "DatabaseConnections", "FreeableMemory", "ReadIOPS", "WriteIOPS"]
+              },
+              "statistics": {
+                "type": "object",
+                "properties": {
+                  "average": {
+                    "type": "number"
+                  },
+                  "maximum": {
+                    "type": "number"
+                  },
+                  "minimum": {
+                    "type": "number"
+                  }
+                }
+              },
+              "unit": {
+                "type": "string"
+              },
+              "period": {
+                "type": "integer"
+              },
+              "startTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endTime": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "natGatewayMetrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["natGatewayId", "metricName", "statistics"],
+            "properties": {
+              "natGatewayId": {
+                "type": "string"
+              },
+              "metricName": {
+                "type": "string",
+                "enum": ["BytesInFromSource", "BytesOutToDestination", "PacketsInFromSource", "PacketsOutToDestination"]
+              },
+              "statistics": {
+                "type": "object",
+                "properties": {
+                  "sum": {
+                    "type": "number"
+                  },
+                  "average": {
+                    "type": "number"
+                  }
+                }
+              },
+              "unit": {
+                "type": "string"
+              },
+              "period": {
+                "type": "integer"
+              },
+              "startTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endTime": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "s3Metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["bucketName", "metricName", "statistics"],
+            "properties": {
+              "bucketName": {
+                "type": "string"
+              },
+              "metricName": {
+                "type": "string",
+                "enum": ["BucketSizeBytes", "NumberOfObjects", "AllRequests", "GetRequests", "PutRequests"]
+              },
+              "statistics": {
+                "type": "object",
+                "properties": {
+                  "average": {
+                    "type": "number"
+                  },
+                  "sum": {
+                    "type": "number"
+                  }
+                }
+              },
+              "storageType": {
+                "type": "string"
+              },
+              "unit": {
+                "type": "string"
+              },
+              "period": {
+                "type": "integer"
+              },
+              "startTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "endTime": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    },
+    "costSummary": {
+      "type": "object",
+      "description": "Overall cost summary",
+      "properties": {
+        "totalMonthlyCost": {
+          "type": "number"
+        },
+        "costByService": {
+          "type": "object",
+          "properties": {
+            "ec2": {
+              "type": "number"
+            },
+            "ebs": {
+              "type": "number"
+            },
+            "rds": {
+              "type": "number"
+            },
+            "s3": {
+              "type": "number"
+            },
+            "natGateway": {
+              "type": "number"
+            }
+          }
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        }
+      }
+    }
+  }
+}
