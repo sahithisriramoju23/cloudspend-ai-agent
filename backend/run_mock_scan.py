@@ -4,11 +4,15 @@ Mock Scan Runner - Test StorageOptimizationAgent with sample data
 import json
 import sys
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Add backend to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from services.groq_client import GroqClient
+from services.gemini_client import GeminiClient
 from agents.storage_agent import StorageOptimizationAgent
 
 
@@ -29,7 +33,7 @@ def main():
     print("\nAnalyzing storage resources...\n")
     
     # Initialize agent with Groq client
-    llm_client = GroqClient()
+    llm_client = GeminiClient()
     agent = StorageOptimizationAgent(llm_client)
     
     # Run analysis

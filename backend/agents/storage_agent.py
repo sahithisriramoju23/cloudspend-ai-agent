@@ -3,8 +3,8 @@ Storage Optimization Agent - Analyzes storage resources and generates recommenda
 """
 import json
 from typing import Dict
-from backend.utils.llm_client import LLMClient
-from backend.utils.logger import setup_logger
+from services.llm_client import LLMClient
+from utils.logger import setup_logger
 
 
 class StorageOptimizationAgent:
@@ -64,28 +64,25 @@ Return ONLY valid JSON with no additional text."""
             system_prompt=system_prompt,
             user_prompt=user_prompt,
             temperature=0.3,
-            max_tokens=2000
+            max_tokens=4000
         )
         
         self.logger.info("Parsing LLM response")
         # Parse and validate JSON response
         try:
-            recommendations = json.loads(response.strip())
+            # Clean response
+            cleaned = response.strip()
+            # Remove markdown if present
+            if "```json" in cleaned:
+                cleaned = cleaned.split("```json")[1].split("```")[0].strip()
+            elif "```" in cleaned:
+                cleaned = cleaned.split("```")[1].split("```")[0].strip()
+            
+            recommendations = json.loads(cleaned)
             self.logger.info(f"Successfully parsed recommendations: {len(recommendations.get('recommendations', []))} items")
             self.logger.info(f"Returning recommendations with potential savings: ${recommendations.get('totalPotentialSavings', 0):.2f}")
             return recommendations
-        except json.JSONDecodeError:
-            self.logger.warning("Initial JSON parse failed, attempting to extract from markdown")
-            # Attempt to extract JSON if wrapped in markdown
-            if "```json" in response:
-                json_str = response.split("```json")[1].split("```")[0].strip()
-                recommendations = json.loads(json_str)
-                self.logger.info("Successfully extracted JSON from markdown wrapper")
-                return recommendations
-            elif "```" in response:
-                json_str = response.split("```")[1].split("```")[0].strip()
-                recommendations = json.loads(json_str)
-                self.logger.info("Successfully extracted JSON from code block")
-                return recommendations
-            self.logger.error(f"Failed to parse LLM response as JSON: {response[:200]}...")
-            raise ValueError(f"LLM did not return valid JSON: {response}")
+        except json.JSONDecodeError as e:
+            self.logger.error(f"JSON parse error at position {e.pos}: {e.msg}")
+            self.logger.error(f"Response preview: {response[:500]}...")
+            raise ValueError(f"LLM did not return valid JSON. Error: {e.msg} at position {e.pos}")
