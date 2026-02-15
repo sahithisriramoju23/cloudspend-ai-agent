@@ -1,0 +1,23 @@
+{
+  "provider": "AWS",
+  "costs": [
+    {
+      "service": "EC2",
+      "region": "us-east-1",
+      "cost": 1250.50,
+      "date": "2024-01-01"
+    },
+    {
+      "service": "S3",
+      "region": "us-east-1",
+      "cost": 320.75,
+      "date": "2024-01-01"
+    },
+    {
+      "service": "RDS",
+      "region": "us-west-2",
+      "cost": 890.25,
+      "date": "2024-01-01"
+    }
+  ]
+}

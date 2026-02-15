@@ -1,0 +1,17 @@
+{
+  "provider": "Azure",
+  "costs": [
+    {
+      "service": "Virtual Machines",
+      "region": "East US",
+      "cost": 980.30,
+      "date": "2024-01-01"
+    },
+    {
+      "service": "Storage",
+      "region": "West Europe",
+      "cost": 245.60,
+      "date": "2024-01-01"
+    }
+  ]
+}

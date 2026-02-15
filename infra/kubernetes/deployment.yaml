@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudspend-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cloudspend-backend
+  template:
+    metadata:
+      labels:
+        app: cloudspend-backend
+    spec:
+      containers:
+      - name: backend
+        image: cloudspend-backend:latest
+        ports:
+        - containerPort: 8000

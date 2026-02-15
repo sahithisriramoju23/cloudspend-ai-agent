@@ -1,0 +1,17 @@
+{
+  "provider": "GCP",
+  "costs": [
+    {
+      "service": "Compute Engine",
+      "region": "us-central1",
+      "cost": 1100.45,
+      "date": "2024-01-01"
+    },
+    {
+      "service": "Cloud Storage",
+      "region": "us-east1",
+      "cost": 180.90,
+      "date": "2024-01-01"
+    }
+  ]
+}
