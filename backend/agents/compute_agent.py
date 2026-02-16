@@ -3,8 +3,8 @@ Compute Optimization Agent - Analyzes EC2 instances for cost optimization
 """
 import json
 from typing import Dict
-from backend.agents.base_agent import BaseAgent
-from backend.utils.llm_client import LLMClient
+from agents.base_agent import BaseAgent
+from utils.llm_client import LLMClient
 
 
 class ComputeOptimizationAgent(BaseAgent):
