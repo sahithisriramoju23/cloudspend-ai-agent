@@ -13,7 +13,7 @@ load_dotenv()
 sys.path.insert(0, str(Path(__file__).parent))
 
 from services.gemini_client import GeminiClient
-from agents.storage_agent import StorageOptimizationAgent
+from agents.orchestrator_agent import OrchestratorAgent
 
 
 def main():
@@ -24,31 +24,57 @@ def main():
         scan_data = json.load(f)
     
     print("=" * 60)
-    print("CloudSpend AI - Storage Optimization Analysis")
+    print("CloudSpend AI - Multi-Agent Cost Optimization Analysis")
     print("=" * 60)
     print(f"\nLoaded scan data from: {scan_file}")
     print(f"Account: {scan_data['accountId']}")
     print(f"Region: {scan_data['region']}")
     print(f"Total Monthly Cost: ${scan_data['costSummary']['totalMonthlyCost']}")
-    print("\nAnalyzing storage resources...\n")
+    print("\nRunning multi-agent analysis...\n")
     
-    # Initialize agent with Groq client
+    # Initialize orchestrator with Gemini client
     llm_client = GeminiClient()
-    agent = StorageOptimizationAgent(llm_client)
+    orchestrator = OrchestratorAgent(llm_client)
     
-    # Run analysis
-    recommendations = agent.analyze(scan_data)
+    # Run orchestrated analysis
+    result = orchestrator.analyze(scan_data)
     
-    # Print results
-    print("=" * 60)
-    print("OPTIMIZATION RECOMMENDATIONS")
-    print("=" * 60)
-    print(json.dumps(recommendations, indent=2))
+    # Save output to file
+    output_dir = Path(__file__).parent.parent / "docs" / "sample-output"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_file = output_dir / "report.json"
+    
+    with open(output_file, "w") as f:
+        json.dump(result, f, indent=2)
+    
     print("\n" + "=" * 60)
-    
-    if "totalPotentialSavings" in recommendations:
-        print(f"Total Potential Savings: ${recommendations['totalPotentialSavings']:.2f}/month")
+    print("ANALYSIS COMPLETE")
     print("=" * 60)
+    print(f"\nScan ID: {result['scanId']}")
+    print(f"Timestamp: {result['timestamp']}")
+    print(f"\nOutput saved to: {output_file}")
+    
+    # Print executive summary
+    if "report" in result and "executiveSummary" in result["report"]:
+        print("\n" + "=" * 60)
+        print("EXECUTIVE SUMMARY")
+        print("=" * 60)
+        print(f"\n{result['report']['executiveSummary']}")
+        
+        if "totalEstimatedSavings" in result["report"]:
+            print(f"\nTotal Potential Savings: ${result['report']['totalEstimatedSavings']:.2f}/month")
+        
+        if "top5Savings" in result["report"]:
+            print("\n" + "=" * 60)
+            print("TOP 5 SAVINGS OPPORTUNITIES")
+            print("=" * 60)
+            for item in result["report"]["top5Savings"]:
+                print(f"\n{item['rank']}. {item['resourceType']} - {item['resourceId']}")
+                print(f"   Issue: {item['issue']}")
+                print(f"   Savings: ${item['estimatedSavings']:.2f}/month")
+                print(f"   Priority: {item['priority']}")
+    
+    print("\n" + "=" * 60)
 
 
 if __name__ == "__main__":
