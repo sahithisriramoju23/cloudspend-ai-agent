@@ -10,6 +10,7 @@ from agents.compute_agent import ComputeOptimizationAgent
 from agents.network_agent import NetworkOptimizationAgent
 from agents.report_agent import ReportAgent
 from utils.llm_client import LLMClient
+from utils.schema_validator import validate_agent_output, validate_report
 
 
 class OrchestratorAgent(BaseAgent):
@@ -44,33 +45,37 @@ class OrchestratorAgent(BaseAgent):
         self.logger.info("Running Storage Optimization Agent")
         try:
             agent_outputs["storage"] = self.storage_agent.analyze(scan_data)
+            validate_agent_output(agent_outputs["storage"], "StorageOptimizationAgent")
         except Exception as e:
             self.logger.error(f"Storage agent failed: {str(e)}")
-            agent_outputs["storage"] = {"error": str(e), "recommendations": [], "totalPotentialSavings": 0.0}
+            agent_outputs["storage"] = {"error": str(e), "recommendations": [], "totalPotentialSavings": 0.0, "summary": ""}
         
         # Run compute optimization
         self.logger.info("Running Compute Optimization Agent")
         try:
             agent_outputs["compute"] = self.compute_agent.analyze(scan_data)
+            validate_agent_output(agent_outputs["compute"], "ComputeOptimizationAgent")
         except Exception as e:
             self.logger.error(f"Compute agent failed: {str(e)}")
-            agent_outputs["compute"] = {"error": str(e), "recommendations": [], "totalPotentialSavings": 0.0}
+            agent_outputs["compute"] = {"error": str(e), "recommendations": [], "totalPotentialSavings": 0.0, "summary": ""}
         
         # Run network optimization
         self.logger.info("Running Network Optimization Agent")
         try:
             agent_outputs["network"] = self.network_agent.analyze(scan_data)
+            validate_agent_output(agent_outputs["network"], "NetworkOptimizationAgent")
         except Exception as e:
             self.logger.error(f"Network agent failed: {str(e)}")
-            agent_outputs["network"] = {"error": str(e), "recommendations": [], "totalPotentialSavings": 0.0}
+            agent_outputs["network"] = {"error": str(e), "recommendations": [], "totalPotentialSavings": 0.0, "summary": ""}
         
         # Generate executive report
         self.logger.info("Generating Executive Report")
         try:
             report = self.report_agent.analyze(list(agent_outputs.values()))
+            validate_report(report)
         except Exception as e:
             self.logger.error(f"Report agent failed: {str(e)}")
-            report = {"error": str(e), "executiveSummary": "Report generation failed"}
+            report = {"error": str(e), "executiveSummary": "Report generation failed", "totalEstimatedSavings": 0.0, "top5Savings": []}
         
         result = {
             "scanId": scan_id,
