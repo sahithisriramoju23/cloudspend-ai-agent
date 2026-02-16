@@ -4,7 +4,7 @@ Network Optimization Agent - Analyzes network resources for cost optimization
 import json
 from typing import Dict
 from agents.base_agent import BaseAgent
-from utils.llm_client import LLMClient
+from services.llm_client import LLMClient
 
 
 class NetworkOptimizationAgent(BaseAgent):

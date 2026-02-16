@@ -1,0 +1,122 @@
+{
+  "scanId": "0f7920f5-0d47-47e4-9776-5a770130c77d",
+  "timestamp": "2026-02-16T13:16:49.963619Z",
+  "accountId": "123456789012",
+  "region": "us-east-1",
+  "report": {
+    "executiveSummary": "This report identifies significant opportunities to optimize cloud spending, with an estimated total monthly savings of $59.30. Key areas for improvement include rightsizing underutilized compute instances and optimizing storage for inactive or infrequently accessed data. Addressing these recommendations can lead to immediate cost reductions and improved resource efficiency.",
+    "totalEstimatedSavings": 59.3,
+    "savingsBreakdown": {
+      "compute": 54.9,
+      "storage": 4.4,
+      "network": 0.0
+    },
+    "top5Savings": [
+      {
+        "rank": 1,
+        "resourceType": "ec2",
+        "resourceId": "i-0def789ghi012",
+        "issue": "Underutilized EC2 instance 'analytics-server' running as m5.large.",
+        "estimatedSavings": 54.9,
+        "priority": "high"
+      },
+      {
+        "rank": 2,
+        "resourceType": "ebs",
+        "resourceId": "Root volume for i-0xyz345abc678",
+        "issue": "EBS volume attached to a stopped EC2 instance.",
+        "estimatedSavings": 2.4,
+        "priority": "high"
+      },
+      {
+        "rank": 3,
+        "resourceType": "s3",
+        "resourceId": "my-app-data-bucket",
+        "issue": "Significant portion of S3 data in Standard storage class may be infrequently accessed.",
+        "estimatedSavings": 2.0,
+        "priority": "medium"
+      }
+    ],
+    "categorizedRecommendations": {
+      "highPriority": [
+        {
+          "resourceType": "ebs",
+          "resourceId": "Root volume for i-0xyz345abc678",
+          "issue": "An EBS volume is likely attached to the stopped EC2 instance 'i-0xyz345abc678' and is incurring storage costs.",
+          "estimatedSavings": 2.4,
+          "priority": "high"
+        },
+        {
+          "resourceType": "ec2",
+          "resourceId": "i-0def789ghi012",
+          "issue": "Underutilized EC2 instance 'analytics-server' running as m5.large in a development environment.",
+          "estimatedSavings": 54.9,
+          "priority": "high"
+        }
+      ],
+      "mediumPriority": [
+        {
+          "resourceType": "s3",
+          "resourceId": "my-app-data-bucket",
+          "issue": "A significant portion (314.5 GB) of data in 'my-app-data-bucket' is stored in the S3 Standard storage class, which may be infrequently accessed.",
+          "estimatedSavings": 2.0,
+          "priority": "medium"
+        }
+      ],
+      "lowPriority": []
+    },
+    "quickWins": "Delete the EBS volume associated with the stopped EC2 instance 'i-0xyz345abc678' if no longer needed. Implement S3 Lifecycle policies for 'my-app-data-bucket' to transition infrequently accessed data to more cost-effective storage classes like S3 Intelligent-Tiering.",
+    "riskAssessment": "Overall risk is moderate. Deleting unattached EBS volumes and implementing S3 lifecycle policies are low-risk actions. The largest saving, downsizing the EC2 instance 'i-0def789ghi012', carries a medium risk due to potential service interruption during the instance type change and the need to validate performance post-change, though it is in a development environment."
+  },
+  "agentOutputs": {
+    "storage": {
+      "recommendations": [
+        {
+          "resourceType": "ebs",
+          "resourceId": "Root volume for i-0xyz345abc678",
+          "currentCost": 2.4,
+          "issue": "An EBS volume is likely attached to the stopped EC2 instance 'i-0xyz345abc678' and is incurring storage costs.",
+          "recommendation": "Delete the EBS volume if the instance is no longer needed. If the data needs to be preserved, create a snapshot of the volume and then delete the volume to save ongoing storage costs.",
+          "estimatedSavings": 2.4,
+          "priority": "high"
+        },
+        {
+          "resourceType": "s3",
+          "resourceId": "my-app-data-bucket",
+          "currentCost": 11.52,
+          "issue": "A significant portion (314.5 GB) of data in 'my-app-data-bucket' is stored in the S3 Standard storage class, which may be infrequently accessed.",
+          "recommendation": "Implement S3 Lifecycle policies to transition infrequently accessed data from S3 Standard to S3 Intelligent-Tiering or S3 Standard-IA. S3 Intelligent-Tiering is recommended for data with unknown or changing access patterns to automatically optimize costs.",
+          "estimatedSavings": 2.0,
+          "priority": "medium"
+        }
+      ],
+      "totalPotentialSavings": 4.4,
+      "summary": "Identified potential cost savings by addressing an unattached EBS volume for a stopped EC2 instance and optimizing S3 storage classes for infrequently accessed data."
+    },
+    "compute": {
+      "recommendations": [
+        {
+          "resourceType": "ec2",
+          "resourceId": "i-0def789ghi012",
+          "currentCost": 70.08,
+          "issue": "Underutilized EC2 instance 'analytics-server' running as m5.large in a development environment.",
+          "evidence": "CloudWatch metrics show an average CPU Utilization of 8.2% and a maximum of 22.5% over the last 24 hours, indicating significant overprovisioning for its current workload.",
+          "recommendation": "Downsize the instance from m5.large to t3.small. The t3.small instance type provides 2 vCPUs and 2 GiB of memory, which should be sufficient for the observed low CPU utilization, and offers burstable performance for occasional spikes.",
+          "estimatedSavings": 54.9,
+          "priority": "high",
+          "risk": "medium",
+          "remediationCLI": "aws ec2 stop-instances --instance-ids i-0def789ghi012 --region us-east-1\naws ec2 modify-instance-attribute --instance-id i-0def789ghi012 --instance-type \"{\\\"Value\\\": \\\"t3.small\\\"}\" --region us-east-1\naws ec2 start-instances --instance-ids i-0def789ghi012 --region us-east-1",
+          "remediationTerraform": "resource \"aws_instance\" \"analytics_server\" {\n  instance_id = \"i-0def789ghi012\"\n  instance_type = \"t3.small\" # Changed from m5.large\n  # ... other existing configuration ...\n  # Note: Changing instance_type requires the instance to be stopped and started.\n  # Terraform will handle this by stopping, modifying, and starting the instance.\n}"
+        }
+      ],
+      "totalPotentialSavings": 54.9,
+      "summary": "Identified one significantly underutilized EC2 instance ('analytics-server') in a development environment. Downsizing this instance from m5.large to t3.small is recommended, which could lead to an estimated monthly savings of $54.90. No other immediate compute optimization opportunities were found based on the provided metrics and criteria."
+    },
+    "network": {
+      "error": "LLM did not return valid JSON. Error: Unterminated string starting at at position 496",
+      "recommendations": [],
+      "totalPotentialSavings": 0.0,
+      "summary": ""
+    }
+  }
+}

@@ -9,7 +9,7 @@ from agents.storage_agent import StorageOptimizationAgent
 from agents.compute_agent import ComputeOptimizationAgent
 from agents.network_agent import NetworkOptimizationAgent
 from agents.report_agent import ReportAgent
-from utils.llm_client import LLMClient
+from services.llm_client import LLMClient
 from utils.schema_validator import validate_agent_output, validate_report
 
 
