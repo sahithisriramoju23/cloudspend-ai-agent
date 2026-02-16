@@ -19,6 +19,40 @@
         "hourlyRate": 0.0416,
         "monthlyEstimate": 30.37
       }
+    },
+    {
+      "instanceId": "i-0def789ghi012",
+      "instanceType": "m5.large",
+      "state": "running",
+      "launchTime": "2023-11-15T10:00:00Z",
+      "availabilityZone": "us-east-1b",
+      "platform": "linux",
+      "vpcId": "vpc-0123456789",
+      "tags": {
+        "Name": "analytics-server",
+        "Environment": "development"
+      },
+      "pricing": {
+        "hourlyRate": 0.096,
+        "monthlyEstimate": 70.08
+      }
+    },
+    {
+      "instanceId": "i-0xyz345abc678",
+      "instanceType": "t3.small",
+      "state": "stopped",
+      "launchTime": "2023-10-01T14:00:00Z",
+      "availabilityZone": "us-east-1a",
+      "platform": "linux",
+      "vpcId": "vpc-0123456789",
+      "tags": {
+        "Name": "test-server",
+        "Environment": "testing"
+      },
+      "pricing": {
+        "hourlyRate": 0.0208,
+        "monthlyEstimate": 0.00
+      }
     }
   ],
   "ebsVolumes": [
@@ -155,6 +189,21 @@
         "period": 300,
         "startTime": "2024-01-14T10:30:00Z",
         "endTime": "2024-01-15T10:30:00Z"
+      },
+      {
+        "instanceId": "i-0def789ghi012",
+        "metricName": "CPUUtilization",
+        "statistics": {
+          "average": 8.2,
+          "maximum": 22.5,
+          "minimum": 2.1,
+          "sum": 5904,
+          "sampleCount": 720
+        },
+        "unit": "Percent",
+        "period": 300,
+        "startTime": "2024-01-14T10:30:00Z",
+        "endTime": "2024-01-15T10:30:00Z"
       }
     ],
     "rdsMetrics": [
@@ -202,9 +251,9 @@
     ]
   },
   "costSummary": {
-    "totalMonthlyCost": 229.27,
+    "totalMonthlyCost": 299.64,
     "costByService": {
-      "ec2": 30.37,
+      "ec2": 100.45,
       "ebs": 8.00,
       "rds": 122.28,
       "s3": 29.02,
